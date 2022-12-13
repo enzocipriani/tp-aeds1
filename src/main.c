@@ -45,8 +45,8 @@ void surgir_fruta (Fruta *fruta){
     if(fruta->ativo==0)
     {
         srand(time(NULL));
-        fruta->segmento.x = rand() % 640;
-        fruta->segmento.y = rand() % 480;
+        fruta->segmento.x = rand() % 630;
+        fruta->segmento.y = rand() % 470;
         fruta->ativo = 1;
     }
 
@@ -54,8 +54,10 @@ void surgir_fruta (Fruta *fruta){
 
 
 void limite_de_tela(Cobra *cobra){
-    if (cobra->segmentos[0].x<0 || cobra->segmentos[0].x>640){}
-    if (cobra->segmentos[0].y<0 || cobra->segmentos[0].y>480){}
+    if (cobra->segmentos[0].x<0 || cobra->segmentos[0].x>640 || cobra->segmentos[0].y<0 || cobra->segmentos[0].y>480){
+        janela_deve_fechar();
+    }
+    
 }
 
 void atualiza_cobra(Cobra *cobra){
@@ -98,11 +100,23 @@ void desenha_fruta(Fruta *fruta){
 }
 
 void colisao_fruta(Fruta *fruta, Cobra *cobra){
-    if(cobra->segmentos[0].x<fruta->segmento.x<cobra->segmentos[0].x+10 && 
-    cobra->segmentos[0].y<fruta->segmento.y+1<cobra->segmentos[0].y+10) {
+   
+    if(cobra->segmentos[0].x<fruta->segmento.x && fruta->segmento.x<cobra->segmentos[0].x+10 && 
+    cobra->segmentos[0].y<fruta->segmento.y && fruta->segmento.y<cobra->segmentos[0].y+10) {
         fruta->ativo=0;
+        cobra->segmentos[cobra->tamanho].x = cobra->segmentos[cobra->tamanho-1].x;
+        cobra->segmentos[cobra->tamanho].y = cobra->segmentos[cobra->tamanho-1].y;
+
+        cobra->tamanho+=1;
+        
+        
     }
+    
+
+   printf("%d,%d,%d\n", cobra->segmentos[0].x, fruta->segmento.x, cobra->segmentos[0].x + 10);
 }
+
+
 
 int main() {
 
@@ -125,26 +139,30 @@ int main() {
          if (tecla_pressionada(ESC))
             janela_deve_fechar();
 
+        fonte("assets/ubuntu.ttf", 20);
+        desenha_texto(20, 20, "Score: %d", cobra->tamanho-4);
 
         atualiza_cobra(cobra);
+        limite_de_tela(cobra);
         desenha_cobra(cobra);
         colisao_fruta(fruta, cobra);
         surgir_fruta(fruta);
         desenha_fruta(fruta);
+        
 
         
 
 
-        if (tecla_pressionada(CIMA)) 
+        if (tecla_pressionada(CIMA) && cobra->direcao != BAIXO) 
             cobra->direcao = CIMA;
-        if (tecla_pressionada(BAIXO)) 
+        if (tecla_pressionada(BAIXO) && cobra->direcao != CIMA) 
             cobra->direcao = BAIXO;
-        if (tecla_pressionada(ESQUERDA)) 
+        if (tecla_pressionada(ESQUERDA) && cobra->direcao != DIREITA) 
             cobra->direcao = ESQUERDA;
-        if (tecla_pressionada(DIREITA)) 
+        if (tecla_pressionada(DIREITA) && cobra->direcao != ESQUERDA) 
             cobra->direcao = DIREITA;
         int i=0;
-        while(i < 100000000){ //50000000 10000000
+        while(i < 50000000){ //50000000 10000000
             i++;
         }
     }
