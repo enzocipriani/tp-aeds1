@@ -26,8 +26,6 @@ typedef struct {
     int ativo;
 } Fruta;
 
-
-
 Cobra *cria_cobra(){
     Cobra *cobra = (Cobra*)malloc(sizeof(Cobra));
     cobra->segmentos[0].x = 320;
@@ -43,12 +41,15 @@ Cobra *cria_cobra(){
     return cobra;
 }
 
+typedef struct {
+    char jogador[30];
+} Jogador;
 
-void apelido(void){
+
+ void apelido (){
     char *apelido[30];
     printf("Como voce gostaria de ser chamado? \n");
     scanf("%s", *apelido);
-
 }
 
 
@@ -70,7 +71,6 @@ void recordes(void){
 
 	
 	system("cls");
-
 }
 
 void surgir_fruta (Fruta *fruta){
@@ -85,14 +85,15 @@ void surgir_fruta (Fruta *fruta){
 }
 
 
-void limite_de_tela(Cobra *cobra){
+int limite_de_tela(Cobra *cobra){
     if (cobra->segmentos[0].x<0 || cobra->segmentos[0].x>640 || cobra->segmentos[0].y<0 || cobra->segmentos[0].y>480){
-        fonte("assets/ubuntu.ttf", 20);
-        desenha_texto(320, 240, "GAME OVER.");
-        toca_som("assets/jump.wav");
-                                                    // nao ta aparecendo game over
-        sleep(1);
+        
+        toca_som("assets/gameover.wav");
+        sleep(3);    
         janela_deve_fechar();
+        printf("\n\nVoce morreu!\n");
+        printf("Seu SCORE foi: %d\n", cobra->tamanho-1); 
+        
     }
     
 }
@@ -126,13 +127,13 @@ void desenha_cobra(Cobra *cobra){
     for(int i=0; i < cobra->tamanho; i++){
         int x = cobra->segmentos[i].x;
         int y = cobra->segmentos[i].y;
-        cor(LARANJA_ESCURO);
+        cor(VERDE);
         desenha_retangulo(x, y, TAM_SEGMENTO, TAM_SEGMENTO);
     }
 }
 
 void desenha_fruta(Fruta *fruta){
-    cor(ROXO);
+    cor(ROSA_ESCURO);
     desenha_retangulo(fruta->segmento.x, fruta->segmento.y, TAM_SEGMENTO, TAM_SEGMENTO);
 }
 
@@ -147,17 +148,26 @@ void colisao_fruta(Fruta *fruta, Cobra *cobra){
         cobra->tamanho+=1;
 
         toca_som("assets/comer.wav");
-        
     }
     
+}
 
-   printf("%d,%d,%d\n", cobra->segmentos[0].x, fruta->segmento.x, cobra->segmentos[0].x + 10);
+void colisao_cobra (Cobra *cobra){
+    for(int i = 1; i < cobra->tamanho; i++){
+        if (cobra->segmentos[0].x == cobra->segmentos[i].x && cobra->segmentos[0].y == cobra->segmentos[i].y){
+            toca_som("assets/gameover.wav");
+            sleep(2);    
+            janela_deve_fechar();
+            printf("\n\nVoce morreu!\n");
+            printf("Seu SCORE foi: %d\n", cobra->tamanho-1); 
+        }
+    }
 }
 
 
 void lenta (){
     abre_janela(640, 480);
-    toca_som_em_loop("assets/awesomeness.wav");
+    toca_som_em_loop("assets/fundomusica.wav");
     Cobra *cobra = cria_cobra();
     Fruta *fruta = (Fruta*)malloc(sizeof(Fruta));
     fruta->ativo = 0;
@@ -167,7 +177,7 @@ void lenta (){
          if (tecla_pressionada(ESC))
             janela_deve_fechar();
 
-       
+        
 
         fonte("assets/ubuntu.ttf", 20);
         desenha_texto(20, 20, "Score: %d", cobra->tamanho-1);
@@ -175,6 +185,7 @@ void lenta (){
         atualiza_cobra(cobra);
         limite_de_tela(cobra);
         desenha_cobra(cobra);
+        colisao_cobra(cobra);
         colisao_fruta(fruta, cobra);
         surgir_fruta(fruta);
         desenha_fruta(fruta);
@@ -200,7 +211,7 @@ void lenta (){
 
 void normal (){
     abre_janela(640, 480);
-    toca_som_em_loop("assets/awesomeness.wav");
+    toca_som_em_loop("assets/fundomusica.wav");
     Cobra *cobra = cria_cobra();
     Fruta *fruta = (Fruta*)malloc(sizeof(Fruta));
     fruta->ativo = 0;
@@ -218,6 +229,7 @@ void normal (){
         atualiza_cobra(cobra);
         limite_de_tela(cobra);
         desenha_cobra(cobra);
+        colisao_cobra(cobra);
         colisao_fruta(fruta, cobra);
         surgir_fruta(fruta);
         desenha_fruta(fruta);
@@ -233,7 +245,7 @@ void normal (){
         if (tecla_pressionada(DIREITA) && cobra->direcao != ESQUERDA) 
             cobra->direcao = DIREITA;
         int i=0;
-        while(i < 55000000){ //50000000 10000000
+        while(i < 55000000){
             i++;
         }
     }
@@ -242,7 +254,7 @@ void normal (){
 
 void rapida (){
     abre_janela(640, 480);
-    toca_som_em_loop("assets/awesomeness.wav");
+    toca_som_em_loop("assets/fundomusica.wav");
     Cobra *cobra = cria_cobra();
     Fruta *fruta = (Fruta*)malloc(sizeof(Fruta));
     fruta->ativo = 0;
@@ -260,6 +272,7 @@ void rapida (){
         atualiza_cobra(cobra);
         limite_de_tela(cobra);
         desenha_cobra(cobra);
+        colisao_cobra(cobra);
         colisao_fruta(fruta, cobra);
         surgir_fruta(fruta);
         desenha_fruta(fruta);
@@ -275,7 +288,7 @@ void rapida (){
         if (tecla_pressionada(DIREITA) && cobra->direcao != ESQUERDA) 
             cobra->direcao = DIREITA;
         int i=0;
-        while(i < 30000000){ //50000000 10000000
+        while(i < 30000000){
             i++;
         }
     }
@@ -287,53 +300,53 @@ void rapida (){
 int main() {
 
     //passar pra função 
-
-    int menu;
     system("clear");
-    printf("Escolha uma opção para começar: \n");
+
+    while(1) {
+        int menu;
+    printf("\n\nEscolha uma opção para começar: \n");
     printf("1 - Inicar jogo.\n");
     printf("2 - Ver recordes.\n");
     printf("3 - Sair do jogo.\n");
     scanf("%d", &menu);
 
-    switch (menu) {
-        
-    case 1:
-        apelido();
-        int velocidade;
-        printf("Qual a velocidade do jogo? \n");
-        printf("1 - Lento. \n2 - Normal\n3 - Rapido\n");
-        scanf("%d", &velocidade);
-
-        switch (velocidade)
-{
+    switch (menu) {   
         case 1:
-            lenta();
+            apelido();
+            int velocidade;
+            printf("Qual a velocidade do jogo? \n");
+            printf("1 - Lento. \n2 - Normal\n3 - Rapido\n");
+            scanf("%d", &velocidade);
+
+            switch (velocidade){
+            case 1:
+                lenta();
+                break;
+            case 2:
+                normal();
+                break;
+            case 3:
+                rapida();
+                break;
+
+            default:
+                printf("Opcao invalida!.");
+                break;
+            }
             break;
+
         case 2:
-            normal();
+            recordes();
             break;
+            
         case 3:
-            rapida();
+            exit(0);
+            break;
 
         default:
-            printf("Opcao invalida!.");
+            printf("Digite uma opcao valida!");
             break;
         }
-
-
-
-        break;
-    case 2:
-        recordes();
-        break;
-    case 3:
-        exit(0);
-    default:
-        printf("Digite uma opcao valida!");
-        break;
     }
-
-
     
 }
