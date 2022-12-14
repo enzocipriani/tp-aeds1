@@ -26,6 +26,19 @@ typedef struct {
     int ativo;
 } Fruta;
 
+typedef struct {
+    int pontuacao;
+    char *apelido;
+} Score;
+
+struct lista_score { //guarda uma lista de varios endereços, primeiro endereço aponta para Score e quando passa pro 
+    Score *score;
+    struct lista_score* proximo;
+};
+
+typedef struct lista_score lista;
+
+
 Cobra *cria_cobra(){
     Cobra *cobra = (Cobra*)malloc(sizeof(Cobra));
     cobra->segmentos[0].x = 320;
@@ -52,9 +65,17 @@ typedef struct {
     scanf("%s", *apelido);
 }
 
+void gravar_recordes(Score *score){
+    Score *atual = score;
+    FILE *arquivo = fopen("recordes.txt", "w");
+    while (atual != NULL) {
+        fprintf(arquivo, "PLAYER: %s\n SCORE: %d\n\n", atual->apelido, atual->pontuacao);
+    }
+}
+
 
 void recordes(void){
-	system("cls");
+	system("clear");
 	char texto_str[20];
 	FILE *arquivo = fopen("recordes.txt", "r");
 
@@ -68,9 +89,7 @@ void recordes(void){
 	}else{
 		printf("Nenhum recorde registrado!\n");
 	}
-
 	
-	system("cls");
 }
 
 void surgir_fruta (Fruta *fruta){
